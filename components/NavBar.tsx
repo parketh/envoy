@@ -51,8 +51,8 @@ const NavBar = () => {
                     <HStack spacing={8} alignItems={"center"}>
                         <Box fontWeight="bold">LBS Blockchain Governance Portal</Box>
                         <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
-                            {pages.map((page) => (
-                                <NavLink domain={page.domain} title={page.title} />
+                            {pages.map((page, i) => (
+                                <NavLink key={i} domain={page.domain} title={page.title} />
                             ))}
                         </HStack>
                     </HStack>
