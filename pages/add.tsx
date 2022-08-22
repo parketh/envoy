@@ -17,7 +17,7 @@ const Add = () => {
         <>
             <Flex minH="100vh" justify="start" flexDirection={"column"} bg={useColorModeValue("gray.50", "gray.800")}>
                 <NavBar />
-                <Stack spacing={8} mx="auto" width="2xl" py={12} px={6}>
+                <Stack spacing={8} mx="auto" maxWidth="2xl" py={12} px={6}>
                     <Stack align="center">
                         <Heading fontSize="4xl" textAlign="center">
                             Add a proposal

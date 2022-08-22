@@ -101,7 +101,7 @@ const Dashboard = ({
                     bg={useColorModeValue("gray.50", "gray.800")}
                 >
                     <NavBar />
-                    <Stack spacing={8} mx="auto" width="4xl" py={12} px={6}>
+                    <Stack spacing={8} mx="auto" maxWidth="4xl" py={12} px={6}>
                         <Stack align="center">
                             <Heading fontSize="4xl" textAlign="center">
                                 Dashboard
@@ -118,6 +118,8 @@ const Dashboard = ({
             </>
         )
     }
+
+    return <a href="/api/auth/login">Login</a>
 }
 
 const ProposalGroup = ({ proposals, type }: { proposals: Array<ProposalWithRelations>; type: string }) => {
@@ -147,7 +149,7 @@ const ProposalGroup = ({ proposals, type }: { proposals: Array<ProposalWithRelat
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {proposals.map((p) => (
+                            {proposals.map((p, i) => (
                                 <Tr
                                     _hover={{
                                         textDecoration: "none",
@@ -155,6 +157,7 @@ const ProposalGroup = ({ proposals, type }: { proposals: Array<ProposalWithRelat
                                         bg: useColorModeValue("gray.200", "gray.600"),
                                     }}
                                     onClick={() => handleClick(p)}
+                                    key={i}
                                 >
                                     <Td>
                                         {new Date(p.dateExpiry).toLocaleDateString("en-UK", {

@@ -9,8 +9,10 @@ const colors = {}
 const theme = extendTheme({ colors })
 
 function MyApp({ Component, pageProps }: AppProps) {
+    const { user } = pageProps
+
     return (
-        <UserProvider>
+        <UserProvider user={user}>
             <ChakraProvider theme={theme}>
                 <Component {...pageProps} />
             </ChakraProvider>

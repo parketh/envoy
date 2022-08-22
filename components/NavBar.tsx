@@ -54,6 +54,7 @@ const NavBar = () => {
                             {pages.map((page, i) => (
                                 <NavLink key={i} domain={page.domain} title={page.title} />
                             ))}
+                            <a href="/api/auth/logout">Logout</a>
                         </HStack>
                     </HStack>
                     <Flex alignItems={"center"}>
