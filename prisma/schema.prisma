@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Delegate {
+  id           Int           @id @default(autoincrement())
+  name         String
+  proposals    Proposal[]
+  memos        Memo[]
+  comments     Comment[]
+}
+
+model Protocol {
+  id           Int         @id @default(autoincrement())
+  name         String 
+  description  String
+  proposals    Proposal[]
+
+}
+
+model Proposal {
+  id            Int         @id @default(autoincrement())
+  title         String 
+  author        Delegate    @relation(fields: [authorId], references: [id])
+  authorId      Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  protocol      Protocol    @relation(fields: [protocolId], references: [id])
+  protocolId    Int         
+  type          String
+  dateAdded     DateTime
+  dateExpiry    DateTime
+  dateExecuted  DateTime?
+  voteUrl       String
+  forumUrl      String
+  memo          Memo?
+  status        Status
+  decision      String
+  dateVoted     DateTime?
+}
+
+model Memo {
+  id                Int         @id @default(autoincrement())
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  proposal          Proposal    @relation(fields: [proposalId], references: [id])
+  proposalId        Int         @unique
+  author            Delegate    @relation(fields: [authorId], references: [id])
+  authorId          Int
+  summary           String?
+  reasonsFor        String?
+  reasonsAgainst    String?
+  decision          String?
+  rationale         String?
+  comments          Comment[]
+  likes             Int
+}
+
+model Comment {
+  id            Int        @id @default(autoincrement())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  memo          Memo       @relation(fields: [memoId], references: [id])
+  memoId        Int        @unique
+  author        Delegate   @relation(fields: [authorId], references: [id])
+  authorId      Int
+  text          String
+  likes         Int
+}
+
+enum Status {
+  Unassigned
+  Assigned
+  Submitted
+}
+
+enum Role {
+  USER
+  ADMIN
+}
