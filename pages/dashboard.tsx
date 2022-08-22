@@ -21,11 +21,13 @@ import {
     DrawerHeader,
     DrawerBody,
 } from "@chakra-ui/react"
-import NavBar from "../components/NavBar"
+import { useUser } from "@auth0/nextjs-auth0"
 import { useState } from "react"
-import prisma from "../lib/prisma"
 import { GetStaticProps } from "next"
 import { Prisma } from "@prisma/client"
+
+import NavBar from "../components/NavBar"
+import prisma from "../lib/prisma"
 import SideBar from "../components/SideBar"
 
 type ProposalsWithRelations = Prisma.PromiseReturnType<typeof getProposals>
@@ -72,8 +74,6 @@ const getProposals = async (status: any, past: boolean) => {
         },
     })
 
-    console.log(proposals)
-
     return proposals
 }
 
@@ -86,26 +86,38 @@ const Dashboard = ({
     assigned: Array<ProposalWithRelations>
     past: Array<ProposalWithRelations>
 }) => {
-    return (
-        <>
-            <Flex minH="100vh" justify="start" flexDirection={"column"} bg={useColorModeValue("gray.50", "gray.800")}>
-                <NavBar />
-                <Stack spacing={8} mx="auto" width="4xl" py={12} px={6}>
-                    <Stack align="center">
-                        <Heading fontSize="4xl" textAlign="center">
-                            Dashboard
-                        </Heading>
-                        <Text fontSize="lg" color="gray.600" textAlign="center">
-                            Monitor live proposals and submit recommendations.
-                        </Text>
+    const { user, error, isLoading } = useUser()
+
+    if (isLoading) return <div>Loading...</div>
+    if (error) return <div>{error.message}</div>
+
+    if (user) {
+        return (
+            <>
+                <Flex
+                    minH="100vh"
+                    justify="start"
+                    flexDirection={"column"}
+                    bg={useColorModeValue("gray.50", "gray.800")}
+                >
+                    <NavBar />
+                    <Stack spacing={8} mx="auto" width="4xl" py={12} px={6}>
+                        <Stack align="center">
+                            <Heading fontSize="4xl" textAlign="center">
+                                Dashboard
+                            </Heading>
+                            <Text fontSize="lg" color="gray.600" textAlign="center">
+                                Monitor live proposals and submit recommendations.
+                            </Text>
+                        </Stack>
+                        <ProposalGroup proposals={unassigned} type="Unassigned" />
+                        <ProposalGroup proposals={assigned} type="Assigned" />
+                        <ProposalGroup proposals={past} type="Past" />
                     </Stack>
-                    <ProposalGroup proposals={unassigned} type="Unassigned" />
-                    <ProposalGroup proposals={assigned} type="Assigned" />
-                    <ProposalGroup proposals={past} type="Past" />
-                </Stack>
-            </Flex>
-        </>
-    )
+                </Flex>
+            </>
+        )
+    }
 }
 
 const ProposalGroup = ({ proposals, type }: { proposals: Array<ProposalWithRelations>; type: string }) => {

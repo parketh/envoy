@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^1.9.1",
     "@chakra-ui/icons": "^2.0.8",
     "@chakra-ui/react": "^2.2.8",
     "@emotion/react": "^11.10.0",
