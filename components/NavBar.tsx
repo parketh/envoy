@@ -15,17 +15,15 @@ import {
     useColorMode,
     useColorModeValue,
     Stack,
+    Divider,
 } from "@chakra-ui/react"
 import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from "@chakra-ui/icons"
+import { useUser } from "@auth0/nextjs-auth0"
 
 const pages: Array<{ domain: String; title: String }> = [
     {
         domain: "dashboard",
         title: "Dashboard",
-    },
-    {
-        domain: "timeline",
-        title: "Timeline",
     },
     {
         domain: "add",
@@ -36,6 +34,7 @@ const pages: Array<{ domain: String; title: String }> = [
 const NavBar = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { colorMode, toggleColorMode } = useColorMode()
+    const { user } = useUser()
 
     return (
         <>
@@ -54,15 +53,24 @@ const NavBar = () => {
                             {pages.map((page, i) => (
                                 <NavLink key={i} domain={page.domain} title={page.title} />
                             ))}
-                            <a href="/api/auth/logout">Logout</a>
                         </HStack>
                     </HStack>
                     <Flex alignItems={"center"}>
-                        <Menu>
+                        <HStack spacing={4}>
+                            <Box display={{ base: "none", lg: "flex" }}>
+                                {user ? `Welcome, ${user.name?.split(" ")[0]}` : ""}
+                            </Box>
+                            <Box display={{ base: "none", lg: "flex" }}>
+                                {user ? (
+                                    <NavLink domain={"api/auth/logout"} title={"Logout"} />
+                                ) : (
+                                    <NavLink domain={"api/auth/login"} title={"Login"} />
+                                )}
+                            </Box>
                             <Button mr={4} onClick={toggleColorMode}>
                                 {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
                             </Button>
-                        </Menu>
+                        </HStack>
                     </Flex>
                 </Flex>
 
@@ -72,6 +80,15 @@ const NavBar = () => {
                             {pages.map((page) => (
                                 <NavLink domain={page.domain} title={page.title} />
                             ))}
+                            <Divider />
+                            <Box px={2} py={1}>
+                                {user ? `Welcome, ${user?.nickname}` : ""}
+                            </Box>
+                            {user ? (
+                                <NavLink domain={"api/auth/logout"} title={"Logout"} />
+                            ) : (
+                                <NavLink domain={"api/auth/login"} title={"Login"} />
+                            )}
                         </Stack>
                     </Box>
                 ) : null}
