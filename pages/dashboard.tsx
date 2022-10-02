@@ -20,6 +20,7 @@ import {
     DrawerCloseButton,
     DrawerHeader,
     DrawerBody,
+    VStack,
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { GetStaticProps } from "next"
@@ -35,55 +36,47 @@ export type ProposalWithRelations = ProposalsWithRelations[0]
 export const getStaticProps: GetStaticProps = async () => {
     const unassigned = await getProposals("Unassigned", false)
     const assigned = await getProposals("Assigned", false)
-    const past = await getProposals(null, true)
 
     return {
         props: {
             unassigned: JSON.parse(JSON.stringify(unassigned)),
             assigned: JSON.parse(JSON.stringify(assigned)),
-            past: JSON.parse(JSON.stringify(past)),
         },
         revalidate: 10,
     }
 }
 
-const getProposals = async (status: any, past: boolean) => {
-    const whereOptions = past
-        ? {
-              dateExpiry: {
-                  lt: new Date(),
-              },
-          }
-        : {
-              status: status,
-              dateExpiry: {
-                  gte: new Date(),
-              },
-          }
-
-    const proposals = await prisma.proposal.findMany({
-        where: whereOptions,
-        include: {
-            memo: {
-                include: {
-                    author: true,
-                },
+const getProposals = async (status: string | null, past: boolean) => {
+    const response: any = await fetch(
+        `http://localhost:3000/api/proposal/get?status=${status}&past=${past === true ? 1 : 0}`,
+        {
+            method: "GET",
+            mode: "cors",
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization",
             },
-        },
-    })
+        }
+    )
 
+    const proposals = await response.json()
     return proposals
 }
 
 const Dashboard = ({
     unassigned,
     assigned,
-    past,
 }: {
     unassigned: Array<ProposalWithRelations>
     assigned: Array<ProposalWithRelations>
-    past: Array<ProposalWithRelations>
 }) => {
+    const [pastProposals, setPastProposals] = useState<Array<ProposalWithRelations>>()
+
+    const fetchPastProposals = async () => {
+        const proposals = await getProposals(null, true)
+        setPastProposals(proposals)
+    }
+
     return (
         <>
             <Flex minH="100vh" justify="start" flexDirection={"column"} bg={useColorModeValue("gray.50", "gray.800")}>
@@ -99,7 +92,28 @@ const Dashboard = ({
                     </Stack>
                     <ProposalGroup proposals={unassigned} type="Unassigned" />
                     <ProposalGroup proposals={assigned} type="Assigned" />
-                    <ProposalGroup proposals={past} type="Past" />
+                    {pastProposals ? (
+                        <ProposalGroup proposals={pastProposals} type="Past" />
+                    ) : (
+                        <Box rounded="lg" bg={useColorModeValue("white", "gray.700")} boxShadow="lg" p={8}>
+                            <VStack align="start">
+                                <Text
+                                    align="left"
+                                    as="b"
+                                    fontSize="sm"
+                                    color={useColorModeValue("blue.400", "gray.600")}
+                                    _hover={{
+                                        textDecoration: "none",
+                                        cursor: "pointer",
+                                        color: useColorModeValue("blue.500", "gray.600"),
+                                    }}
+                                    onClick={() => fetchPastProposals()}
+                                >
+                                    Load past proposals
+                                </Text>
+                            </VStack>
+                        </Box>
+                    )}
                 </Stack>
             </Flex>
         </>
@@ -115,8 +129,6 @@ const ProposalGroup = ({ proposals, type }: { proposals: Array<ProposalWithRelat
         onOpen()
     }
 
-    if (!proposals.length) return <></>
-
     return (
         <>
             <Box rounded="lg" bg={useColorModeValue("white", "gray.700")} boxShadow="lg" p={8}>
@@ -128,31 +140,39 @@ const ProposalGroup = ({ proposals, type }: { proposals: Array<ProposalWithRelat
                         <Thead>
                             <Tr>
                                 <Th>Due date</Th>
-                                {type === "Unassigned" ? <></> : <Th>Lead</Th>}
+                                {type === "Unassigned" ? <></> : <Th>Owner</Th>}
                                 <Th>Title</Th>
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {proposals.map((p, i) => (
-                                <Tr
-                                    _hover={{
-                                        textDecoration: "none",
-                                        cursor: "pointer",
-                                        bg: useColorModeValue("gray.200", "gray.600"),
-                                    }}
-                                    onClick={() => handleClick(p)}
-                                    key={i}
-                                >
-                                    <Td>
-                                        {new Date(p.dateExpiry).toLocaleDateString("en-UK", {
-                                            day: "numeric",
-                                            month: "short",
-                                        })}
-                                    </Td>
-                                    {type === "Unassigned" ? <></> : <Td>{p.memo?.author.name}</Td>}
-                                    <Td>{p.title}</Td>
-                                </Tr>
-                            ))}
+                            {proposals
+                                .sort((a, b) => {
+                                    return Date.parse(b.dateExpiry) - Date.parse(a.dateExpiry)
+                                })
+                                .map((p, i) => (
+                                    <Tr
+                                        _hover={{
+                                            textDecoration: "none",
+                                            cursor: "pointer",
+                                            bg: useColorModeValue("gray.200", "gray.600"),
+                                        }}
+                                        onClick={() => handleClick(p)}
+                                        key={i}
+                                    >
+                                        <Td>
+                                            {new Date(p.dateExpiry).toLocaleDateString("en-UK", {
+                                                day: "numeric",
+                                                month: "short",
+                                            })}
+                                        </Td>
+                                        {p.memo ? (
+                                            <Td>{p.memo?.author.name}</Td>
+                                        ) : (
+                                            <Td textColor={useColorModeValue("gray.400", "gray.500")}>Unassigned</Td>
+                                        )}
+                                        <Td>{p.title}</Td>
+                                    </Tr>
+                                ))}
                         </Tbody>
                     </Table>
                 </TableContainer>

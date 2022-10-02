@@ -25,10 +25,6 @@ const pages: Array<{ domain: String; title: String }> = [
         domain: "dashboard",
         title: "Dashboard",
     },
-    {
-        domain: "add",
-        title: "Add Proposal",
-    },
 ]
 
 const NavBar = () => {
@@ -48,7 +44,9 @@ const NavBar = () => {
                         onClick={isOpen ? onClose : onOpen}
                     />
                     <HStack spacing={8} alignItems={"center"}>
-                        <Box fontWeight="bold">LBS Blockchain Governance Portal</Box>
+                        <Box fontWeight="black" letterSpacing={"wider"} fontSize="xl" ml="2">
+                            ENVOY
+                        </Box>
                         <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
                             {pages.map((page, i) => (
                                 <NavLink key={i} domain={page.domain} title={page.title} />

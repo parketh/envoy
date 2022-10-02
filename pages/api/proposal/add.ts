@@ -8,7 +8,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const createProposal = async (data: Prisma.ProposalCreateInput): Promise<Proposal> => {
             return await prisma.proposal.create({
-                data: data,
+                data: {
+                    title: data.title,
+                    protocol: {
+                        connect: {
+                            name: "MakerDAO",
+                        },
+                    },
+                    type: data.type,
+                    voteType: data.voteType,
+                    options: data.options,
+                    dateAdded: data.dateAdded,
+                    dateExpiry: data.dateExpiry,
+                    voteUrl: data.voteUrl,
+                    forumUrl: data.forumUrl,
+                    status: data.status,
+                },
             })
         }
 
@@ -21,24 +36,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     res.status(404).send({
                         error: "There is a unique constraint violation, a new proposal with this title already exists",
                     })
+                } else {
+                    res.status(404).send({
+                        error: "Unknown Prisma error",
+                    })
                 }
+            } else {
+                res.status(404).send({
+                    error: "Unknown error",
+                })
             }
         }
     } else if (req.method === "GET") {
         const data = {
-            title: "PPG - Open Market Committee Proposal - August 29, 2022",
+            title: "HVBank Drawdown, Maker Teleport Launch on Optimism and Arbitrum - August 31, 2022",
             protocol: {
                 connect: {
                     name: "MakerDAO",
                 },
             },
-            type: "Poll",
-            dateAdded: "2022-08-29T16:00:00.000Z",
-            dateExpiry: "2022-09-01T16:00:00.000Z",
-            voteType: "Rank Free",
-            options: ["Abstain", "Option 1", "Option 2", "No changes"],
-            voteUrl: "https://vote.makerdao.com/polling/QmXHnn2u",
-            forumUrl: "https://forum.makerdao.com/t/parameter-changes-proposal-ppg-omc-001-25-august-2022/17448",
+            type: "Executive Proposal",
+            voteType: "Executive Proposal",
+            options: [],
+            dateAdded: "2022-09-01T06:07:12.000Z",
+            dateExpiry: "2022-09-30T12:51:41.000Z",
+            voteUrl:
+                "https://vote.makerdao.com/executive/template-executive-vote-hvbank-drawdown-maker-teleport-launch-on-optimism-and-arbitrum-august-31-2022#proposal-detail",
+            forumUrl: "",
             status: Status.Unassigned,
         }
 
@@ -57,7 +81,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     res.status(404).send({
                         error: "There is a unique constraint violation, a new proposal with this title already exists",
                     })
+                } else {
+                    res.status(404).send({
+                        error: `Unknown Prisma error: ${e}`,
+                    })
                 }
+            } else {
+                res.status(404).send({
+                    error: `Unknown error: ${e}`,
+                })
             }
         }
     } else {

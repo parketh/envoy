@@ -12,6 +12,7 @@ import {
     DrawerFooter,
     Button,
     HStack,
+    Box,
 } from "@chakra-ui/react"
 
 import { ProposalWithRelations } from "../pages/dashboard"
@@ -39,19 +40,25 @@ const SideBar = ({
                             <SideBarItem label="Name" contents={proposal.title} />
                             <SideBarItem label="Status" contents={proposal.status} />
                             <SideBarItem label="Type" contents={proposal.type} />
-                            <SideBarItem label="Added By" contents={proposal.author.name} />
-                            <SideBarItem label="Proposal Lead" contents={proposal.memo?.author.name || ""} />
+                            <SideBarItem label="Proposal Owner" contents={proposal.memo?.author.name || "Unassigned"} />
                             <SideBarItem label="Date Added" contents={DateWrapper(proposal.dateAdded)} />
                             <SideBarItem label="Deadline" contents={DateWrapper(proposal.dateExpiry)} />
+                            <SideBarItem label="Vote Type" contents={proposal.voteType || ""} />
+                            <SideBarItem label="Options" contents={proposal.options.join(", ")} />
                             <SideBarItemLink label="Vote URL" link={proposal.voteUrl} />
                             <SideBarItemLink label="Forum URL" link={proposal.forumUrl} />
-                            <SideBarItemLink label="Memo" link={`/memo/${proposal.memo?.id}`} />
+                            {proposal.memo ? (
+                                <SideBarItemLink label="Memo" link={`/memo/${proposal.memo?.id}`} />
+                            ) : (
+                                <></>
+                            )}
                             {proposal.decision ? <SideBarItem label="Decision" contents={proposal.decision} /> : <></>}
                             {proposal.dateVoted ? (
                                 <SideBarItem label="Date Voted" contents={DateWrapper(proposal.dateVoted)} />
                             ) : (
                                 <></>
                             )}
+                            <Box width="100%" height={16} />
                         </Stack>
                     </DrawerBody>
                     <DrawerFooter width="100%">
@@ -71,10 +78,10 @@ const SideBar = ({
                             <Button
                                 loadingText="Opening"
                                 size="md"
-                                bg={proposal.memo ? "blue.400" : useColorModeValue("gray.300", "gray.500")}
-                                color={proposal.memo ? "white" : useColorModeValue("gray.800", "white")}
+                                bg={proposal.memo ? useColorModeValue("gray.300", "gray.500") : "blue.400"}
+                                color={proposal.memo ? useColorModeValue("gray.800", "white") : "white"}
                                 _hover={{
-                                    bg: proposal.memo ? "blue.500" : useColorModeValue("gray.400", "gray.600"),
+                                    bg: proposal.memo ? useColorModeValue("gray.400", "gray.600") : "blue.500",
                                 }}
                                 onClick={() => {}}
                             >

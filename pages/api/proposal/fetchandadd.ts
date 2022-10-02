@@ -1,4 +1,3 @@
-import { Status } from "@prisma/client"
 import { NextApiRequest, NextApiResponse } from "next"
 
 interface IProposalInfo {
@@ -11,8 +10,9 @@ interface IProposalInfo {
     type: string
     dateAdded: Date
     dateExpiry: Date
+    dateExexcuted: Date
     voteType: string
-    options: Array<String>
+    options: Array<string>
     voteUrl: string
     forumUrl: string
     status: string
@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     name: "MakerDAO",
                 },
             },
-            type: "Poll",
+            type: selectedProposal.type,
             dateAdded: selectedProposal.dateAdded,
             dateExpiry: selectedProposal.dateExpiry,
             voteType: selectedProposal.voteType,
