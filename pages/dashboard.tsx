@@ -34,18 +34,18 @@ import { server } from "../config"
 type ProposalsWithRelations = Prisma.PromiseReturnType<typeof getProposals>
 export type ProposalWithRelations = ProposalsWithRelations[0]
 
-export const getStaticProps: GetStaticProps = async () => {
-    const unassigned = await getProposals("Unassigned", false)
-    const assigned = await getProposals("Assigned", false)
+// export const getStaticProps: GetStaticProps = async () => {
+//     const unassigned = await getProposals("Unassigned", false)
+//     const assigned = await getProposals("Assigned", false)
 
-    return {
-        props: {
-            unassigned: JSON.parse(JSON.stringify(unassigned)),
-            assigned: JSON.parse(JSON.stringify(assigned)),
-        },
-        revalidate: 10,
-    }
-}
+//     return {
+//         props: {
+//             unassigned: JSON.parse(JSON.stringify(unassigned)),
+//             assigned: JSON.parse(JSON.stringify(assigned)),
+//         },
+//         revalidate: 10,
+//     }
+// }
 
 const getProposals = async (status: string | null, past: boolean) => {
     const response: any = await fetch(`${server}/api/proposal/get?status=${status}&past=${past === true ? 1 : 0}`, {
@@ -70,10 +70,10 @@ const Dashboard = ({
 }) => {
     const [pastProposals, setPastProposals] = useState<Array<ProposalWithRelations>>()
 
-    const fetchPastProposals = async () => {
-        const proposals = await getProposals(null, true)
-        setPastProposals(proposals)
-    }
+    // const fetchPastProposals = async () => {
+    //     const proposals = await getProposals(null, true)
+    //     setPastProposals(proposals)
+    // }
 
     return (
         <>
