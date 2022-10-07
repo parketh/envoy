@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return
     }
 
-    const proposalResponse: any = await fetch("http://localhost:3000/api/proposal/fetch/makerdao", {
+    const proposalResponse: any = await fetch("/api/proposal/fetch/makerdao", {
         method: "GET",
         mode: "cors",
         headers: {
@@ -53,7 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             status: selectedProposal.status,
         }
 
-        const response: any = await fetch("http://127.0.0.1:3000/api/proposal/add", {
+        const response: any = await fetch("/api/proposal/add", {
             method: "POST",
             mode: "cors",
             headers: {

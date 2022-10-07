@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,69 +8,68 @@ datasource db {
 }
 
 model Delegate {
-  id           Int           @id @default(autoincrement())
-  name         String
-  email        String       @unique  
-  memos        Memo[]
-  comments     Comment[]
+  id       Int       @id @default(autoincrement())
+  name     String
+  email    String    @unique
+  comments Comment[]
+  memos    Memo[]
 }
 
 model Protocol {
-  id           Int         @id @default(autoincrement())
-  name         String      @unique
-  description  String
-  proposals    Proposal[]
-
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  description String
+  proposals   Proposal[]
 }
 
 model Proposal {
-  id            Int         @id @default(autoincrement())
-  title         String      @unique
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  protocol      Protocol    @relation(fields: [protocolId], references: [id])
-  protocolId    Int         
-  type          String
-  dateAdded     DateTime
-  dateExpiry    DateTime
-  dateExecuted  DateTime?
-  voteType      String?
-  options       String[]
-  voteUrl       String
-  forumUrl      String
-  memo          Memo?
-  status        Status
-  decision      String?
-  dateVoted     DateTime?
+  id           Int       @id @default(autoincrement())
+  title        String    @unique
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  protocolId   Int
+  type         String
+  dateAdded    DateTime
+  dateExpiry   DateTime
+  dateExecuted DateTime?
+  voteType     String?
+  options      String[]
+  voteUrl      String
+  forumUrl     String
+  status       Status
+  decision     String?
+  dateVoted    DateTime?
+  protocol     Protocol  @relation(fields: [protocolId], references: [id])
+  memo         Memo?
 }
 
 model Memo {
-  id                Int         @id @default(autoincrement())
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  proposal          Proposal    @relation(fields: [proposalId], references: [id])
-  proposalId        Int         @unique
-  author            Delegate    @relation(fields: [authorId], references: [id])
-  authorId          Int
-  summary           String?
-  reasonsFor        String?
-  reasonsAgainst    String?
-  decision          String?
-  rationale         String?
-  comments          Comment[]
-  likes             Int
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  proposalId     Int      @unique
+  authorId       Int
+  summary        String?
+  reasonsFor     String?
+  reasonsAgainst String?
+  decision       String?
+  rationale      String?
+  likes          Int
+  author         Delegate @relation(fields: [authorId], references: [id])
+  proposal       Proposal @relation(fields: [proposalId], references: [id])
+  comments       Comment?
 }
 
 model Comment {
-  id            Int        @id @default(autoincrement())
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  memo          Memo       @relation(fields: [memoId], references: [id])
-  memoId        Int        @unique
-  author        Delegate   @relation(fields: [authorId], references: [id])
-  authorId      Int
-  text          String
-  likes         Int
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  memoId    Int      @unique
+  authorId  Int
+  text      String
+  likes     Int
+  author    Delegate @relation(fields: [authorId], references: [id])
+  memo      Memo     @relation(fields: [memoId], references: [id])
 }
 
 enum Status {

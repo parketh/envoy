@@ -51,12 +51,11 @@ const scrape = async (type: ProposalType) => {
                           .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
                           .replace(/ +(?= )/g, "")
                           .toLowerCase()
-                          .replaceAll(" ", "-")}${"#proposal-detail"}`,
+                          .replace(/ /g, "-")}${"#proposal-detail"}`,
                       forumUrl: "",
                       status: Status.Unassigned,
                   }
               })
-
     return data
 }
 

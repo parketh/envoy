@@ -29,6 +29,7 @@ import { Prisma } from "@prisma/client"
 import NavBar from "../components/NavBar"
 import prisma from "../lib/prisma"
 import SideBar from "../components/SideBar"
+import { server } from "../config"
 
 type ProposalsWithRelations = Prisma.PromiseReturnType<typeof getProposals>
 export type ProposalWithRelations = ProposalsWithRelations[0]
@@ -47,17 +48,14 @@ export const getStaticProps: GetStaticProps = async () => {
 }
 
 const getProposals = async (status: string | null, past: boolean) => {
-    const response: any = await fetch(
-        `http://localhost:3000/api/proposal/get?status=${status}&past=${past === true ? 1 : 0}`,
-        {
-            method: "GET",
-            mode: "cors",
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-            },
-        }
-    )
+    const response: any = await fetch(`${server}/api/proposal/get?status=${status}&past=${past === true ? 1 : 0}`, {
+        method: "GET",
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+        },
+    })
 
     const proposals = await response.json()
     return proposals
