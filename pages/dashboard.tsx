@@ -70,10 +70,10 @@ const Dashboard = ({
 }) => {
     const [pastProposals, setPastProposals] = useState<Array<ProposalWithRelations>>()
 
-    // const fetchPastProposals = async () => {
-    //     const proposals = await getProposals(null, true)
-    //     setPastProposals(proposals)
-    // }
+    const fetchPastProposals = async () => {
+        // const proposals = await getProposals(null, true)
+        // setPastProposals(proposals)
+    }
 
     return (
         <>
