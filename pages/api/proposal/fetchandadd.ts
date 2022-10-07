@@ -1,4 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next"
+import { server } from "../../../config"
+import Telegram from "telegram-notify"
+import * as dotenv from "dotenv"
+dotenv.config()
+
+let notify = new Telegram({ token: process.env.BOT_TOKEN, chatId: process.env.CHAT_ID })
 
 interface IProposalInfo {
     title: string
@@ -24,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return
     }
 
-    const proposalResponse: any = await fetch("/api/proposal/fetch/makerdao", {
+    const proposalResponse: any = await fetch(`${server}/api/proposal/fetch/makerdao`, {
         method: "GET",
         mode: "cors",
         headers: {
@@ -53,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             status: selectedProposal.status,
         }
 
-        const response: any = await fetch("/api/proposal/add", {
+        const response: any = await fetch(`${server}/api/proposal/add`, {
             method: "POST",
             mode: "cors",
             headers: {
@@ -65,7 +71,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             body: JSON.stringify(data),
         })
 
-        // const newProposal = await response.json()
+        const newProposal = await response.json()
+        if (response.status === 200) {
+            const message = `${data.title}\n\nType: ${data.type}\nVote Type: ${data.voteType}\nOptions: ${data.options}\nDate Added: ${data.dateAdded}\nExpiry date: ${data.dateExpiry}\nVote URL: ${data.voteUrl}\nForum URL: ${data.forumUrl}`
+            await notify.send(message)
+        }
     }
     res.status(200).json({ message: "done" })
 }
