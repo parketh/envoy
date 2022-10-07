@@ -1,7 +1,6 @@
 import { Status } from "@prisma/client"
 import { NextApiRequest, NextApiResponse } from "next"
-
-const puppeteer = require("puppeteer")
+import { launchChromium } from "playwright-aws-lambda"
 
 enum ProposalType {
     poll,
@@ -9,15 +8,16 @@ enum ProposalType {
 }
 
 const scrape = async (type: ProposalType) => {
-    const browser = await puppeteer.launch({})
-    const page = await browser.newPage()
-
     const slug = type === ProposalType.poll ? "polling" : "executive"
-    await page.goto(`https://vote.makerdao.com/${slug}`)
-    var element = await page.waitForSelector("#__NEXT_DATA__")
-    var text = await page.evaluate((element: { textContent: any }) => element.textContent, element)
 
-    browser.close()
+    const browser = await launchChromium({
+        headless: true, // setting this to true will not run the UI
+    })
+    const context = await browser.newContext()
+    const page = await context.newPage()
+    await page.goto(`https://vote.makerdao.com/${slug}`)
+    let text = await page.innerHTML("#__NEXT_DATA__")
+    await browser.close()
 
     const entries = JSON.parse(text).props.pageProps[slug === "polling" ? "polls" : "proposals"]
     const data =
