@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { server } from "../../../config"
-import Telegram from "telegram-notify"
+const Telegram = require("telegram-notify")
 import * as dotenv from "dotenv"
 dotenv.config()
 
