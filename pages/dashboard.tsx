@@ -34,6 +34,20 @@ import { server } from "../config"
 type ProposalsWithRelations = Prisma.PromiseReturnType<typeof getProposals>
 export type ProposalWithRelations = ProposalsWithRelations[0]
 
+const getProposals = async (status: string | null, past: boolean) => {
+    const response: any = await fetch(`${server}/api/proposal/get?status=${status}&past=${past === true ? 1 : 0}`, {
+        method: "GET",
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+        },
+    })
+
+    const proposals = await response.json()
+    return proposals
+}
+
 export const getStaticProps: GetStaticProps = async () => {
     const unassigned = await getProposals("Unassigned", false)
     const assigned = await getProposals("Assigned", false)
@@ -47,20 +61,6 @@ export const getStaticProps: GetStaticProps = async () => {
         },
         revalidate: 10,
     }
-}
-
-const getProposals = async (status: string | null, past: boolean) => {
-    const response: any = await fetch(`${server}/api/proposal/get?status=${status}&past=${past === true ? 1 : 0}`, {
-        method: "GET",
-        mode: "cors",
-        headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-        },
-    })
-
-    const proposals = await response.json()
-    return proposals
 }
 
 const Dashboard = ({
@@ -95,9 +95,9 @@ const Dashboard = ({
                             Monitor live proposals and submit recommendations.
                         </Text>
                     </Stack>
-                    <ProposalGroup proposals={unassignedProposals} type="Unassigned" />
-                    <ProposalGroup proposals={assignedProposals} type="Assigned" />
-                    <ProposalGroup proposals={pastProposals} type="Past" />
+                    {unassignedProposals ? <ProposalGroup proposals={unassignedProposals} type="Unassigned" /> : <></>}
+                    {assignedProposals ? <ProposalGroup proposals={assignedProposals} type="Assigned" /> : <></>}
+                    {pastProposals ? <ProposalGroup proposals={pastProposals} type="Past" /> : <></>}
                 </Stack>
             </Flex>
         </>
@@ -113,13 +113,9 @@ const ProposalGroup = ({ proposals, type }: { proposals: Array<ProposalWithRelat
         onOpen()
     }
 
-    if (!proposals) {
-        return <Box rounded="lg" bg={useColorModeValue("white", "gray.700")} boxShadow="lg" p={8}></Box>
-    }
-
     return (
         <>
-            <Box rounded="lg" bg={useColorModeValue("white", "gray.700")} boxShadow="lg" p={8}>
+            {/* <Box rounded="lg" bg={useColorModeValue("white", "gray.700")} boxShadow="lg" p={8}>
                 <Text align="left" as="b" fontSize="sm">
                     {`${type} (${proposals.length})`}
                 </Text>
@@ -165,7 +161,7 @@ const ProposalGroup = ({ proposals, type }: { proposals: Array<ProposalWithRelat
                     </Table>
                 </TableContainer>
             </Box>
-            <SideBar proposal={active} onClose={onClose} isOpen={isOpen} />
+            <SideBar proposal={active} onClose={onClose} isOpen={isOpen} /> */}
         </>
     )
 }
