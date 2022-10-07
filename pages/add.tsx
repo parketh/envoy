@@ -13,11 +13,8 @@ import {
 } from "@chakra-ui/react"
 import { Dispatch, SetStateAction, useState } from "react"
 import NavBar from "../components/NavBar"
-import { useUser } from "@auth0/nextjs-auth0"
 
 const Add = () => {
-    const { user } = useUser()
-
     const [protocol, setProtocol] = useState<string>()
     const [type, setType] = useState<string>()
     const [title, setTitle] = useState<string>()
@@ -28,7 +25,7 @@ const Add = () => {
 
     const submitProposal = async () => {
         const data = {
-            user: user,
+            user: "placeholder",
             protocol: protocol,
             type: type,
             title: title,
@@ -37,8 +34,6 @@ const Add = () => {
             voteUrl: voteUrl,
             forumUrl: forumUrl,
         }
-
-        console.log(data)
 
         const response = await fetch("api/proposal/submit", {
             method: "POST",
